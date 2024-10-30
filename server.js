@@ -17,7 +17,7 @@ app.post('/commands', async(req, res)=>{
     console.log(question);
  //https://api.openai.com/v1/chat/completions muista tämä?
 
- //se avain pitää vaihtaa jos ei toimi joku .env tiedosto tarvis olla
+ //se avain pitää vaihtaa jos ei toimi joku .env tiedosto tarvis olla ja sen avaimen = nimi pitää olla OPENAI_API_KEY tiedoston sisällä
     try{
         const response = await fetch('https://api.openai.com/v1/chat/completions',{
 
@@ -28,11 +28,27 @@ app.post('/commands', async(req, res)=>{
 
 
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages:[
+                    {role:'user', content: question}
+                ],
+                max_tokens:150
+
+
+
+
+            })
 
 
 
         });
+
+        const data = await response.json();
+        console.log(data.choices[0].message);
+        const reply = data.choices[0].message.content;
+        res.json({reply});
+        
 
 
     }catch(error){
@@ -40,11 +56,11 @@ app.post('/commands', async(req, res)=>{
 
     }
 
-    if(question){res.json({question:`tactics ${question}`});
+    //if(question){res.json({question:`tactics ${question}`});
 
-    }else
-    {res.status(400).json({error:`no tactics.`});
-    }
+    //}else
+    //{res.status(400).json({error:`no tactics.`});
+    //}
 
 
 

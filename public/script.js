@@ -12,7 +12,7 @@ async function lahetykset(){
     if(userInput.trim() === '') return;
     console.log(userInput);
 
-    kerroviesti(userInput);
+    kerroviesti('Käyttäjä: ' + userInput,'user-message');
 
     try {
         const response = await fetch('/commands',{
@@ -26,10 +26,11 @@ async function lahetykset(){
         const data = await response.json();
     
         console.log(data);
+        kerroviesti(data.reply,'bot-message');
         
     } catch (error) {
         console.error('Error',error);
-        kerroviesti('command center got hit!');
+        kerroviesti('command center got hit!','bot-message');
     }
 
 
@@ -55,8 +56,9 @@ async function lahetykset(){
 }
 
 //addMessageToChatBox
-function kerroviesti(message){
+function kerroviesti(message,className){
     const viestielement = document.createElement('div');
+    viestielement.classList.add('message',className);
     
     viestielement.textContent = message;
     console.log(viestielement);
