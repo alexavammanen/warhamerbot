@@ -5,6 +5,7 @@ document.getElementById('nopeanappi').addEventListener('keypress', function(e){
         lahetykset();
     }
 });
+document.getElementById('tiedot').addEventListener('click',tiedostot);
 
 
 async function lahetykset(){
@@ -69,6 +70,36 @@ function kerroviesti(message,className){
 
 
 
+}
+async function tiedostot() {
+
+    const oikeat_tiedot_tiedossa = document.getElementById('oikeat_tiedot');
+    console.log(oikeat_tiedot_tiedossa.files);
+    const files = oikeat_tiedot_tiedossa.files;
+    if(files.length === 0){
+        alert('need more minerals/pictures')
+        return;
+
+
+
+    }
+
+
+
+
+    const formData = new FormData();
+
+    for(let i =0; i<files.length; i++){
+        formData.append('images',files[i]);
+
+    }
+
+    console.log(formData)
+
+
+
+    console.log("testi tiedosto");
+    
 }
 
 
