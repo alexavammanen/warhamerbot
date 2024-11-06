@@ -72,8 +72,12 @@ app.post('/commands', async(req, res)=>{
 app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
 
     const files = req.files;
-    console.log(req);
-    //console.log(files);
+    console.log(files);
+    //console.log(req);
+    if(!files || files.leght === 0){
+
+        return res.status(400).json({error:'noo we are out of files D:'});
+    }
 
 
 });
