@@ -87,7 +87,7 @@ async function tiedostot() {
 
 
 
-    const formData = new FormData();
+     const formData = new FormData();
 
     for(let i =0; i<files.length; i++){
         formData.append('images',files[i]);
@@ -99,6 +99,20 @@ async function tiedostot() {
 
 
     console.log("testi tiedosto");
+
+
+
+    try{
+
+        const response = await fetch('/upload-Images',{
+
+            method:'POST',
+            body:formData
+        })
+    }catch(error){
+        console.error('Error:',error);
+
+    }
     
 }
 

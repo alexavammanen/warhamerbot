@@ -1,12 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import multer from 'multer';
 
 dotenv.config();
 
 
 const app = express();
 const port = 3000;
+
+const upload = multer({dest:'upload/'});
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -62,6 +65,15 @@ app.post('/commands', async(req, res)=>{
     //{res.status(400).json({error:`no tactics.`});
     //}
 
+
+
+});
+
+app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
+
+    const files = req.files;
+    console.log(req);
+    //console.log(files);
 
 
 });
