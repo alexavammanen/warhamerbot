@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import vision from '@google-cloud/vision';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const upload = multer({dest:'upload/'});
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
+const client = new vision.ImageAnnotatorClient({keyFilename:'omaope-vision.json'});
 
 app.post('/commands', async(req, res)=>{
     const question = req.body.question;
@@ -77,6 +79,20 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
     if(!files || files.leght === 0){
 
         return res.status(400).json({error:'noo we are out of files D:'});
+    }
+    try{
+        const texts = await Promise.all(files.map(async file => {
+
+            const imagePath = file.path;
+            const [result] = await client.textDetection(imagePath);
+            const detections = result.textAnnotations;
+            return detections.leght > 0 ? detections[0].description : '';
+        }))
+        console.log('ocr:'+ texts);
+    }catch(error){
+        console.error('Error',error.message);
+        ResizeObserver.status(500).json({error:error.message});
+
     }
 
 
