@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 
 const client = new vision.ImageAnnotatorClient({keyFilename:'omaope-vision.json'});
 
+let testfieltest = '';
+let context = [] //context to keskustelulista
+
 app.post('/commands', async(req, res)=>{
     const question = req.body.question;
     console.log(question);
@@ -76,7 +79,7 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
     const files = req.files;
     console.log(files);
     //console.log(req);
-    if(!files || files.leght === 0){
+    if(!files || files.length === 0){
 
         return res.status(400).json({error:'noo we are out of files D:'});
     }
@@ -86,9 +89,41 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
             const imagePath = file.path;
             const [result] = await client.textDetection(imagePath);
             const detections = result.textAnnotations;
-            return detections.leght > 0 ? detections[0].description : '';
+            return detections.length > 0 ? detections[0].description : '';
         }))
+
+        testfieltest = texts.join('');
+        console.log(testfieltest);
+        context = [{role:'user',content:testfieltest}];
+
+
         console.log('ocr:'+ texts);
+
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+
+
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages:context.concat([
+                    {role:'user', content: 'luo yksinkertainen ja sellkeä kysymys ja sen vastau yllä olevasta tekstistä suomeksi kysy vain yksi asia kerrallaan'}
+                ]),
+                max_tokens:150
+
+            })
+
+
+
+        });
+
+        const data = await response.json();
+        console.log(data);
+
     }catch(error){
         console.error('Error',error.message);
         ResizeObserver.status(500).json({error:error.message});
