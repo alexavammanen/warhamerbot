@@ -19,6 +19,8 @@ const client = new vision.ImageAnnotatorClient({keyFilename:'omaope-vision.json'
 
 let testfieltest = '';
 let context = [] //context to keskustelulista
+let currentQuestin ='';//tallentaa kys
+let correctandswer ='';//tallentaa vastaus
 
 app.post('/commands', async(req, res)=>{
     const question = req.body.question;
@@ -111,7 +113,7 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
             body: JSON.stringify({
                 model: 'gpt-4o-mini',
                 messages:context.concat([
-                    {role:'user', content: 'luo yksinkertainen ja sellkeä kysymys ja sen vastau yllä olevasta tekstistä suomeksi kysy vain yksi asia kerrallaan'}
+                    {role:'user', content: 'luo yksi yksinkertainen ja sellkeä kysymys ja sen vastau yllä olevasta tekstistä suomeksi kysy vain yksi asia kerrallaan  '}
                 ]),
                 max_tokens:150
 
@@ -122,8 +124,25 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
         });
 
         const data = await response.json();
-        console.log(data);
+        console.log(data.choices[0].message.content);
+        const responseText = data.choices[0].message.content.trim();
 
+        const [question, answer] = responseText.includes('Vastaus') ? responseText.split('Vastaus') : [responseText, null];
+
+        console.log("kys" + question );
+        console.log("vasta"+ answer);
+
+        if(!question || !answer){
+
+            return res.status(400).json({error:'no queston nor anserws basically maybe more or less required'});
+        }
+        currentQuestin = question.trim();
+        correctandswer = question.trim();
+        
+        context.push({role:'assistant',content:`quest: ${currentQuestin}`});
+        context.push({role:'assistant',content:`oikea: ${correctandswer}`});
+
+        res.json({question: currentQuestin, answer:correctandswer});
     }catch(error){
         console.error('Error',error.message);
         ResizeObserver.status(500).json({error:error.message});
