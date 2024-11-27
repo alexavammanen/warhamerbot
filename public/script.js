@@ -1,3 +1,8 @@
+
+let currentQuestin ='';
+let correctandswer ='';
+
+
 document.getElementById('lahetys').addEventListener('click',lahetykset);
 //e on hyvä functio
 document.getElementById('nopeanappi').addEventListener('keypress', function(e){
@@ -109,6 +114,9 @@ async function tiedostot() {
             method:'POST',
             body:formData
         })
+
+        const data = await response.json();
+        console.log(data);
     }catch(error){
         console.error('Error:',error);
 
