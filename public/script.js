@@ -3,7 +3,12 @@ let currentQuestin ='';
 let correctandswer ='';
 
 
+
+
 document.getElementById('lahetys').addEventListener('click',lahetykset);
+
+
+
 //e on hyvä functio
 document.getElementById('nopeanappi').addEventListener('keypress', function(e){
     if(e.key === 'Enter'){
@@ -11,14 +16,35 @@ document.getElementById('nopeanappi').addEventListener('keypress', function(e){
     }
 });
 document.getElementById('tiedot').addEventListener('click',tiedostot);
+document.getElementById('vastanappi2').addEventListener('click',sendanswer);
 
+function sendanswer(){
+
+    console.log("vastaus? missä")
+    const answerini = document.getElementById('vastanappi').value;
+    
+    if(answerini.trim() == '') return;
+
+    kerroviesti('??:' + answerini,'user-message','kuvebox');
+
+    try{
+
+        console.log('Error',error);
+
+    }catch(error)
+    {
+        document.getElementById('answerini').value ='';
+
+    }
+
+}
 
 async function lahetykset(){
     const userInput = document.getElementById('nopeanappi').value;
     if(userInput.trim() === '') return;
     console.log(userInput);
 
-    kerroviesti('Käyttäjä: ' + userInput,'user-message');
+    kerroviesti('Käyttäjä: ' + userInput,'user-message','kuva-arvostelu','gpt',kuvebox);
 
     try {
         const response = await fetch('/commands',{
@@ -30,13 +56,14 @@ async function lahetykset(){
         });
     
         const data = await response.json();
-    
+
         console.log(data);
-        kerroviesti(data.reply,'bot-message');
+        console.log(data);
+        kerroviesti(data.reply,'bot-message','kuva-arvostelu','gpt');
         
     } catch (error) {
         console.error('Error',error);
-        kerroviesti('command center got hit!','bot-message');
+        kerroviesti('command center got hit!','bot-message','kuva-arvostelu','gpt');
     }
 
 
@@ -62,16 +89,16 @@ async function lahetykset(){
 }
 
 //addMessageToChatBox
-function kerroviesti(message,className){
+function kerroviesti(message,className,kuvebox){
     const viestielement = document.createElement('div');
     viestielement.classList.add('message',className);
     
     viestielement.textContent = message;
     console.log(viestielement);
-    document.getElementById('gpt').appendChild(viestielement);
+    document.getElementById(kuvebox).appendChild(viestielement);
 
 
-
+    //tarvitsee omaope-vision.json tiedosto google vision tomiakseen muualla ei tässä
 
 
 
@@ -117,6 +144,15 @@ async function tiedostot() {
 
         const data = await response.json();
         console.log(data);
+
+        
+        currentQuestin = data.question
+        correctandswer = data.answer;
+        console.log('current question' + currentQuestin);
+        console.log('current ansewr:' + correctandswer);
+        kerroviesti('???' + currentQuestin, 'bot-message','kuva-arvostelu')
+    
+
     }catch(error){
         console.error('Error:',error);
 
