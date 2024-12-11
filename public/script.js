@@ -18,7 +18,7 @@ document.getElementById('nopeanappi').addEventListener('keypress', function(e){
 document.getElementById('tiedot').addEventListener('click',tiedostot);
 document.getElementById('vastanappi2').addEventListener('click',sendanswer);
 
-function sendanswer(){
+async function sendanswer(){
 
     console.log("vastaus? missä")
     const answerini = document.getElementById('vastanappi').value;
@@ -28,7 +28,15 @@ function sendanswer(){
     kerroviesti('??:' + answerini,'user-message','kuvebox');
 
     try{
+        const response = await fetch ('/check-answer',{
+            method:'POST',
+            headers:{
+                'Content-Type':'aplication/json'
 
+            },
+            body:JSON.stringify({user_answer:answerini,correct_andswer:correctandswer})
+
+        });
         console.log('Error',error);
 
     }catch(error)

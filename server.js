@@ -22,6 +22,50 @@ let context = [] //context to keskustelulista
 let currentQuestin ='';//tallentaa kys
 let correctandswer ='';//tallentaa vastaus
 
+app.post('/check-answer', async(req,res)=>{
+    const useranswer =req.body.user_answer
+    console.log(useranswer);
+    try{
+        const response = await fetch('https://api.openai.com/v1/chat/completions',{
+
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+
+
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages:[
+                    {role:'system', content: 'ole aina ystävällinen opettaja, joka arvio oppilaan vastauksen kohtalaiseen sävyyn'},
+                    {role:'user', content:`kysymys${currentQuestin}`},
+                    {role:'user', content:`oikealle${correctandswer}`},
+                    {role:'user', content:`opiskelian vastaus${useranswer}`},
+                    {role:'user',content:'arvio opiskelian vastaus asteikolla 0/10 ja anna lyhyt selitys ystävällisesti miten pääddyttiin tähän tulokseen'},
+
+                ],
+                max_tokens:150
+
+
+
+
+            })
+
+
+
+        });
+        const data = await response.json();
+        const evaluation = data.choices[0].message.content.trim();
+        console.log("arvio:",evaluation);
+        
+
+    }catch(error){
+
+    }
+
+})
+
 app.post('/commands', async(req, res)=>{
     const question = req.body.question;
     console.log(question);
@@ -143,6 +187,9 @@ app.post('/upload-Images',upload.array('images',10) ,async(req,res)=>{
         context.push({role:'assistant',content:`oikea: ${correctandswer}`});
 
         res.json({question: currentQuestin, answer:correctandswer});
+
+        
+
     }catch(error){
         console.error('Error',error.message);
         ResizeObserver.status(500).json({error:error.message});
