@@ -58,6 +58,7 @@ app.post('/check-answer', async(req,res)=>{
         const data = await response.json();
         const evaluation = data.choices[0].message.content.trim();
         console.log("arvio:",evaluation);
+        res.json({evaluation});
         
 
     }catch(error){

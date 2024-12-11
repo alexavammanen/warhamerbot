@@ -25,7 +25,7 @@ async function sendanswer(){
     
     if(answerini.trim() == '') return;
 
-    kerroviesti('??:' + answerini,'user-message','kuvebox');
+    kerroviesti('??:' + answerini,'user-message','kuva-arvostelu');
 
     try{
         const response = await fetch ('/check-answer',{
@@ -37,6 +37,8 @@ async function sendanswer(){
             body:JSON.stringify({user_answer:answerini,correct_andswer:correctandswer})
 
         });
+        const data = await response.json();
+        kerroviesti('???'+ data.evaluation,'bot-message','kuvebox')
         console.log('Error',error);
 
     }catch(error)
@@ -52,7 +54,7 @@ async function lahetykset(){
     if(userInput.trim() === '') return;
     console.log(userInput);
 
-    kerroviesti('Käyttäjä: ' + userInput,'user-message','kuva-arvostelu','gpt',kuvebox);
+    kerroviesti('Käyttäjä: ' + userInput,'user-message','kuva-arvostelu');
 
     try {
         const response = await fetch('/commands',{
@@ -67,11 +69,11 @@ async function lahetykset(){
 
         console.log(data);
         console.log(data);
-        kerroviesti(data.reply,'bot-message','kuva-arvostelu','gpt');
+        kerroviesti(data.reply,'bot-message','kuva-arvostelu');
         
     } catch (error) {
         console.error('Error',error);
-        kerroviesti('command center got hit!','bot-message','kuva-arvostelu','gpt');
+        kerroviesti('command center got hit!','bot-message','kuva-arvostelu');
     }
 
 
